@@ -21,7 +21,7 @@ interface Trade {
   symbol: string;
   price: number;
   quantity: number;
-  createdAt: string;
+  executedAt: string;
   buyerOrderId: number;
   sellerOrderId: number;
 }
@@ -198,7 +198,7 @@ export default function TradeTerminal() {
                       <div key={`trade-${trade.id}-${i}`} className="grid grid-cols-3 text-sm py-1 border-b border-[#2B3139]/50 last:border-0 hover:bg-[#2B3139]/30 transition-colors animate-in fade-in slide-in-from-top-1">
                         <span className="text-[#00e676] font-semibold">${trade.price.toFixed(2)}</span>
                         <span className="text-right text-gray-300">{trade.quantity}</span>
-                        <span className="text-right text-gray-500">{new Date(trade.createdAt).toLocaleTimeString()}</span>
+                        <span className="text-right text-gray-500">{new Date(trade.executedAt).toLocaleTimeString()}</span>
                       </div>
                     ))}
                     {symbolTrades.length === 0 && (

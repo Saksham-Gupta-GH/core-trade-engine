@@ -7,7 +7,7 @@ interface Trade {
   symbol: string;
   price: number;
   quantity: number;
-  createdAt: string;
+  executedAt: string;
 }
 
 interface PriceChartProps {
@@ -17,7 +17,7 @@ interface PriceChartProps {
 export default function PriceChart({ trades }: PriceChartProps) {
   // Format data for Recharts (reverse to show chronological order left-to-right if trades are ordered newest-first)
   const data = [...trades].reverse().map(trade => {
-    const date = new Date(trade.createdAt);
+    const date = new Date(trade.executedAt);
     return {
       time: `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}`,
       price: trade.price,
