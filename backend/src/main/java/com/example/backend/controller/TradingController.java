@@ -5,6 +5,7 @@ import com.example.backend.model.Trade;
 import com.example.backend.repository.OrderRepository;
 import com.example.backend.repository.TradeRepository;
 import com.example.backend.service.MatchingEngineService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "*") // Allows Next.js to call this API
+@CrossOrigin(origins = "${frontend.url:http://localhost:3000}")
 @RequiredArgsConstructor
 public class TradingController {
 
@@ -22,9 +23,15 @@ public class TradingController {
     private final TradeRepository tradeRepository;
 
     @PostMapping("/orders")
-    public ResponseEntity<Order> placeOrder(@RequestBody Order order) {
+    public ResponseEntity<Order> placeOrder(@Valid @RequestBody Order order) {
         Order processedOrder = matchingEngineService.processOrder(order);
         return ResponseEntity.ok(processedOrder);
+    }
+
+    @PutMapping("/orders/{id}/cancel")
+    public ResponseEntity<Void> cancelOrder(@PathVariable Long id) {
+        matchingEngineService.cancelOrder(id);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/orders")
