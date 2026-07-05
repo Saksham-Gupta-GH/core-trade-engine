@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "${frontend.url:http://localhost:3000}")
+@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class TradingController {
 

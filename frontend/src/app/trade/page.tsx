@@ -40,11 +40,11 @@ export default function TradeTerminal() {
 
   const fetchData = async () => {
     try {
-      const ordersRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'}/api/orders`);
+      const ordersRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://core-trade-engine-api.onrender.com'}/api/orders`);
       const ordersData = await ordersRes.json();
       setOrders(ordersData.filter((o: Order) => o.status !== "FILLED" && o.status !== "CANCELED"));
 
-      const tradesRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'}/api/trades`);
+      const tradesRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://core-trade-engine-api.onrender.com'}/api/trades`);
       const tradesData = await tradesRes.json();
       setTrades(tradesData);
     } catch (err) {
@@ -61,7 +61,7 @@ export default function TradeTerminal() {
   const placeOrder = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'}/api/orders`, {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://core-trade-engine-api.onrender.com'}/api/orders`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -83,7 +83,7 @@ export default function TradeTerminal() {
 
   const cancelOrder = async (orderId: number) => {
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'}/api/orders/${orderId}/cancel`, {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://core-trade-engine-api.onrender.com'}/api/orders/${orderId}/cancel`, {
         method: "PUT",
       });
       fetchData();
