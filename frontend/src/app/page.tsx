@@ -30,11 +30,11 @@ export default function Home() {
 
   const fetchData = async () => {
     try {
-      const ordersRes = await fetch("http://localhost:8080/api/orders");
+      const ordersRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'}/api/orders`);
       const ordersData = await ordersRes.json();
       setOrders(ordersData.filter((o: Order) => o.status !== "FILLED"));
 
-      const tradesRes = await fetch("http://localhost:8080/api/trades");
+      const tradesRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'}/api/trades`);
       const tradesData = await tradesRes.json();
       setTrades(tradesData);
     } catch (err) {
@@ -51,7 +51,7 @@ export default function Home() {
   const placeOrder = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await fetch("http://localhost:8080/api/orders", {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'}/api/orders`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
