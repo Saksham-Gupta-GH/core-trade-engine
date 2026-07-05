@@ -30,8 +30,7 @@ public class Order {
     @Column(nullable = false)
     private String side; // "BUY" or "SELL"
 
-    @NotBlank(message = "Order Type (LIMIT/MARKET) cannot be empty")
-    @Column(nullable = true)
+    @Column(nullable = false, columnDefinition = "varchar(255) default 'LIMIT'")
     private String orderType = "LIMIT"; // "LIMIT" or "MARKET"
 
     // Price is null for MARKET orders
