@@ -56,6 +56,42 @@ export default function ArchitecturePage() {
           </p>
         </div>
 
+        {/* How to Run Card */}
+        <div className="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm">
+          <h3 className="text-2xl font-bold text-black mb-4 flex items-center gap-3">
+            <div className="bg-[#34e0a1]/20 p-2 rounded-full text-[#00aa6c]">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+              </svg>
+            </div>
+            How to Run Locally
+          </h3>
+          
+          <div className="space-y-4">
+            <div>
+              <h4 className="font-bold text-gray-900 mb-2">1. Start the Java Backend</h4>
+              <div className="bg-gray-900 p-4 rounded-lg overflow-x-auto">
+                <code className="text-green-400 text-sm">
+                  cd backend<br/>
+                  ./gradlew bootRun
+                </code>
+              </div>
+            </div>
+
+            <div>
+              <h4 className="font-bold text-gray-900 mb-2 mt-4">2. Start the Next.js Frontend</h4>
+              <div className="bg-gray-900 p-4 rounded-lg overflow-x-auto">
+                <code className="text-green-400 text-sm">
+                  cd frontend<br/>
+                  npm install<br/>
+                  npm run dev
+                </code>
+              </div>
+              <p className="text-sm text-gray-600 mt-2">Then open <a href="http://localhost:3000" className="text-[#00aa6c] hover:underline">http://localhost:3000</a> in your browser.</p>
+            </div>
+          </div>
+        </div>
+
       </div>
     </main>
   );
