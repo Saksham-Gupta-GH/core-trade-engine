@@ -36,11 +36,20 @@ public class TradingController {
 
     @GetMapping("/orders")
     public ResponseEntity<List<Order>> getOrders() {
-        return ResponseEntity.ok(orderRepository.findAll());
+        // Only return active orders to prevent massive JSON payloads from crashing the client
+        return ResponseEntity.ok(orderRepository.findByStatusIn(List.of("OPEN", "PARTIALLY_FILLED")));
     }
 
     @GetMapping("/trades")
     public ResponseEntity<List<Trade>> getTrades() {
-        return ResponseEntity.ok(tradeRepository.findAll());
+        // Only return the most recent 100 trades
+        List<Trade> allTrades = tradeRepository.findAll();
+        int size = allTrades.size();
+        return ResponseEntity.ok(size > 100 ? allTrades.subList(size - 100, size) : allTrades);
+    }
+
+    @GetMapping("/health")
+    public ResponseEntity<String> healthCheck() {
+        return ResponseEntity.ok("OK");
     }
 }
