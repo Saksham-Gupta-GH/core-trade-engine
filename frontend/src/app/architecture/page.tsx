@@ -56,39 +56,32 @@ export default function ArchitecturePage() {
           </p>
         </div>
 
-        {/* How to Run Card */}
+        {/* How to Use Card */}
         <div className="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm">
           <h3 className="text-2xl font-bold text-black mb-4 flex items-center gap-3">
             <div className="bg-[#34e0a1]/20 p-2 rounded-full text-[#00aa6c]">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
               </svg>
             </div>
-            How to Run Locally
+            How to Use the Terminal
           </h3>
           
-          <div className="space-y-4">
-            <div>
-              <h4 className="font-bold text-gray-900 mb-2">1. Start the Java Backend</h4>
-              <div className="bg-gray-900 p-4 rounded-lg overflow-x-auto">
-                <code className="text-green-400 text-sm">
-                  cd backend<br/>
-                  ./gradlew bootRun
-                </code>
-              </div>
-            </div>
-
-            <div>
-              <h4 className="font-bold text-gray-900 mb-2 mt-4">2. Start the Next.js Frontend</h4>
-              <div className="bg-gray-900 p-4 rounded-lg overflow-x-auto">
-                <code className="text-green-400 text-sm">
-                  cd frontend<br/>
-                  npm install<br/>
-                  npm run dev
-                </code>
-              </div>
-              <p className="text-sm text-gray-600 mt-2">Then open <a href="http://localhost:3000" className="text-[#00aa6c] hover:underline">http://localhost:3000</a> in your browser.</p>
-            </div>
+          <div className="space-y-4 text-gray-700">
+            <p>
+              To see the matching engine in action, head over to the <a href="/trade" className="text-[#00aa6c] font-bold hover:underline">Trade Terminal</a> page and follow these steps:
+            </p>
+            <ol className="list-decimal pl-5 space-y-3">
+              <li>
+                <strong>Look at the Order Book:</strong> Check the lowest <span className="text-red-600 font-bold">Ask (Sell)</span> price currently available on the market.
+              </li>
+              <li>
+                <strong>Place a Matching Order:</strong> Go to the Place Order form, select <strong className="text-black">Buy</strong>, enter the exact same price as the lowest Ask (or higher), and set a quantity.
+              </li>
+              <li>
+                <strong>Watch the Execution:</strong> Click "Buy" and watch as the Java backend instantly crosses the orders. You will see the matching quantities disappear from the Order Book, and a new transaction will instantly appear in the <strong>Recent Transactions</strong> feed!
+              </li>
+            </ol>
           </div>
         </div>
 
