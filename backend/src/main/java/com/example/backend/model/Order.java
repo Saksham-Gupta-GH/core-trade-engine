@@ -31,7 +31,7 @@ public class Order {
     private String side; // "BUY" or "SELL"
 
     @NotBlank(message = "Order Type (LIMIT/MARKET) cannot be empty")
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String orderType = "LIMIT"; // "LIMIT" or "MARKET"
 
     // Price is null for MARKET orders
