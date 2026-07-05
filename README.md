@@ -1,7 +1,5 @@
 # Core Trade Engine
 
-![Core Trade Engine](https://core-trade-engine-ld9q3p8bz-sakshams-projects-541cb0f3.vercel.app/trade)
-
 **Live Demo:** [https://core-trade-engine-ld9q3p8bz-sakshams-projects-541cb0f3.vercel.app/trade](https://core-trade-engine-ld9q3p8bz-sakshams-projects-541cb0f3.vercel.app/trade)
 
 A high-performance, enterprise-grade financial matching engine built with **Java (Spring Boot)** and **Next.js**. This project simulates the core infrastructure of a cryptocurrency or stock exchange, capable of matching limit orders in real-time with strict Price-Time priority.

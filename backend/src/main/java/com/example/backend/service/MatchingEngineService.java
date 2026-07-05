@@ -33,12 +33,17 @@ public class MatchingEngineService {
 
     @PostConstruct
     public void init() {
-        log.info("Initializing Order Books from Database...");
+        log.info("Cleaning up old bot orders...");
         List<Order> openOrders = orderRepository.findByStatusIn(List.of("OPEN", "PARTIALLY_FILLED"));
         for (Order order : openOrders) {
-            getOrderBook(order.getSymbol()).addOrder(order);
+            if ("market_maker_bot".equals(order.getUserId())) {
+                order.setStatus("CANCELED");
+                orderRepository.save(order);
+            } else {
+                getOrderBook(order.getSymbol()).addOrder(order);
+            }
         }
-        log.info("Loaded {} open orders.", openOrders.size());
+        log.info("Loaded {} open user orders.", openOrders.stream().filter(o -> !"market_maker_bot".equals(o.getUserId())).count());
     }
 
     @Transactional
@@ -52,12 +57,20 @@ public class MatchingEngineService {
         if ("BUY".equalsIgnoreCase(newOrder.getSide())) {
             book.matchBuyOrder(newOrder, orderRepository, tradeRepository);
             if (newOrder.getQuantity() > newOrder.getFilledQuantity()) {
-                book.addOrder(newOrder);
+                if ("MARKET".equalsIgnoreCase(newOrder.getOrderType())) {
+                    newOrder.setStatus("CANCELED"); // Unfilled market orders are canceled
+                } else {
+                    book.addOrder(newOrder);
+                }
             }
         } else {
             book.matchSellOrder(newOrder, orderRepository, tradeRepository);
             if (newOrder.getQuantity() > newOrder.getFilledQuantity()) {
-                book.addOrder(newOrder);
+                if ("MARKET".equalsIgnoreCase(newOrder.getOrderType())) {
+                    newOrder.setStatus("CANCELED"); // Unfilled market orders are canceled
+                } else {
+                    book.addOrder(newOrder);
+                }
             }
         }
         
@@ -98,6 +111,8 @@ public class MatchingEngineService {
         }
 
         public synchronized void matchBuyOrder(Order buyOrder, OrderRepository orderRepo, TradeRepository tradeRepo) {
+            boolean isMarket = "MARKET".equalsIgnoreCase(buyOrder.getOrderType());
+            
             while (!sellOrders.isEmpty() && buyOrder.getQuantity() > buyOrder.getFilledQuantity()) {
                 Order bestSell = sellOrders.peek();
                 
@@ -107,8 +122,8 @@ public class MatchingEngineService {
                     continue;
                 }
                 
-                if (buyOrder.getPrice() >= bestSell.getPrice()) {
-                    executeTrade(buyOrder, bestSell, orderRepo, tradeRepo);
+                if (isMarket || buyOrder.getPrice() >= bestSell.getPrice()) {
+                    executeTrade(buyOrder, bestSell, orderRepo, tradeRepo, bestSell.getPrice());
                     if (bestSell.getQuantity().equals(bestSell.getFilledQuantity())) {
                         sellOrders.poll();
                     }
@@ -119,6 +134,8 @@ public class MatchingEngineService {
         }
 
         public synchronized void matchSellOrder(Order sellOrder, OrderRepository orderRepo, TradeRepository tradeRepo) {
+            boolean isMarket = "MARKET".equalsIgnoreCase(sellOrder.getOrderType());
+            
             while (!buyOrders.isEmpty() && sellOrder.getQuantity() > sellOrder.getFilledQuantity()) {
                 Order bestBuy = buyOrders.peek();
                 
@@ -128,8 +145,8 @@ public class MatchingEngineService {
                     continue;
                 }
                 
-                if (sellOrder.getPrice() <= bestBuy.getPrice()) {
-                    executeTrade(bestBuy, sellOrder, orderRepo, tradeRepo);
+                if (isMarket || sellOrder.getPrice() <= bestBuy.getPrice()) {
+                    executeTrade(bestBuy, sellOrder, orderRepo, tradeRepo, bestBuy.getPrice());
                     if (bestBuy.getQuantity().equals(bestBuy.getFilledQuantity())) {
                         buyOrders.poll();
                     }
@@ -139,13 +156,11 @@ public class MatchingEngineService {
             }
         }
 
-        private void executeTrade(Order buyOrder, Order sellOrder, OrderRepository orderRepo, TradeRepository tradeRepo) {
+        private void executeTrade(Order buyOrder, Order sellOrder, OrderRepository orderRepo, TradeRepository tradeRepo, Double executionPrice) {
             int tradeQuantity = Math.min(
                     buyOrder.getQuantity() - buyOrder.getFilledQuantity(),
                     sellOrder.getQuantity() - sellOrder.getFilledQuantity()
             );
-            
-            Double tradePrice = sellOrder.getPrice();
 
             buyOrder.setFilledQuantity(buyOrder.getFilledQuantity() + tradeQuantity);
             sellOrder.setFilledQuantity(sellOrder.getFilledQuantity() + tradeQuantity);
@@ -158,13 +173,13 @@ public class MatchingEngineService {
 
             Trade trade = new Trade();
             trade.setSymbol(buyOrder.getSymbol());
-            trade.setPrice(tradePrice);
+            trade.setPrice(executionPrice);
             trade.setQuantity(tradeQuantity);
             trade.setBuyerOrderId(buyOrder.getId());
             trade.setSellerOrderId(sellOrder.getId());
             tradeRepo.save(trade);
             
-            log.info("TRADE EXECUTED: {} shares of {} at ${}", tradeQuantity, trade.getSymbol(), tradePrice);
+            log.info("TRADE EXECUTED: {} shares of {} at ${}", tradeQuantity, trade.getSymbol(), executionPrice);
         }
     }
 }

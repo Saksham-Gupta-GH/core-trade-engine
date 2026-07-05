@@ -30,9 +30,12 @@ public class Order {
     @Column(nullable = false)
     private String side; // "BUY" or "SELL"
 
-    @NotNull(message = "Price is required")
-    @Positive(message = "Price must be strictly positive")
+    @NotBlank(message = "Order Type (LIMIT/MARKET) cannot be empty")
     @Column(nullable = false)
+    private String orderType = "LIMIT"; // "LIMIT" or "MARKET"
+
+    // Price is null for MARKET orders
+    @Column(nullable = true)
     private Double price;
 
     @NotNull(message = "Quantity is required")
