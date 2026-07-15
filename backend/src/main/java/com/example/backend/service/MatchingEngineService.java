@@ -32,18 +32,17 @@ public class MatchingEngineService {
     }
 
     @PostConstruct
+    @Transactional
     public void init() {
         log.info("Cleaning up old bot orders...");
+        int canceledCount = orderRepository.cancelBotOrders(List.of("OPEN", "PARTIALLY_FILLED"));
+        log.info("Canceled {} old bot orders.", canceledCount);
+        
         List<Order> openOrders = orderRepository.findByStatusIn(List.of("OPEN", "PARTIALLY_FILLED"));
         for (Order order : openOrders) {
-            if ("market_maker_bot".equals(order.getUserId())) {
-                order.setStatus("CANCELED");
-                orderRepository.save(order);
-            } else {
-                getOrderBook(order.getSymbol()).addOrder(order);
-            }
+            getOrderBook(order.getSymbol()).addOrder(order);
         }
-        log.info("Loaded {} open user orders.", openOrders.stream().filter(o -> !"market_maker_bot".equals(o.getUserId())).count());
+        log.info("Loaded {} open user orders.", openOrders.size());
     }
 
     @Transactional

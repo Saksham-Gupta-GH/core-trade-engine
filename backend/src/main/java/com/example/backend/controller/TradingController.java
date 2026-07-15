@@ -49,7 +49,7 @@ public class TradingController {
     }
 
     @GetMapping("/health")
-    public ResponseEntity<String> healthCheck() {
-        return ResponseEntity.ok("OK");
+    public ResponseEntity<java.util.Map<String, String>> healthCheck() {
+        return ResponseEntity.ok(java.util.Map.of("status", "UP"));
     }
 }
