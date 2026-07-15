@@ -9,6 +9,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findByStatusIn(List<String> statuses);
     void deleteByCreatedAtBefore(LocalDateTime cutoff);
 
+    @org.springframework.transaction.annotation.Transactional
     @org.springframework.data.jpa.repository.Modifying
     @org.springframework.data.jpa.repository.Query("UPDATE Order o SET o.status = 'CANCELED' WHERE o.userId = 'market_maker_bot' AND o.status IN ?1")
     int cancelBotOrders(List<String> statuses);
