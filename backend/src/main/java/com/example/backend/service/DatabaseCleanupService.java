@@ -38,4 +38,16 @@ public class DatabaseCleanupService {
         
         log.info("Database cleanup completed successfully.");
     }
+
+    /**
+     * Runs every 5 minutes (300000 ms).
+     * Cancels old market maker bot orders so they don't accumulate indefinitely.
+     */
+    @Scheduled(fixedRate = 300000)
+    public void cleanupBotOrders() {
+        int canceledCount = orderRepository.cancelBotOrders(java.util.List.of("OPEN", "PARTIALLY_FILLED"));
+        if (canceledCount > 0) {
+            log.info("Scheduled cleanup: canceled {} old market maker bot orders.", canceledCount);
+        }
+    }
 }

@@ -115,16 +115,21 @@ public class MatchingEngineService {
             while (!sellOrders.isEmpty() && buyOrder.getQuantity() > buyOrder.getFilledQuantity()) {
                 Order bestSell = sellOrders.peek();
                 
+                Order latestBestSell = orderRepo.findById(bestSell.getId()).orElse(null);
+                
                 // Lazy deletion check
-                if ("CANCELED".equals(bestSell.getStatus())) {
+                if (latestBestSell == null || "CANCELED".equals(latestBestSell.getStatus())) {
                     sellOrders.poll();
                     continue;
                 }
                 
-                if (isMarket || buyOrder.getPrice() >= bestSell.getPrice()) {
-                    executeTrade(buyOrder, bestSell, orderRepo, tradeRepo, bestSell.getPrice());
-                    if (bestSell.getQuantity().equals(bestSell.getFilledQuantity())) {
+                if (isMarket || buyOrder.getPrice() >= latestBestSell.getPrice()) {
+                    executeTrade(buyOrder, latestBestSell, orderRepo, tradeRepo, latestBestSell.getPrice());
+                    if (latestBestSell.getQuantity().equals(latestBestSell.getFilledQuantity())) {
                         sellOrders.poll();
+                    } else {
+                        bestSell.setFilledQuantity(latestBestSell.getFilledQuantity());
+                        bestSell.setStatus(latestBestSell.getStatus());
                     }
                 } else {
                     break;
@@ -138,16 +143,21 @@ public class MatchingEngineService {
             while (!buyOrders.isEmpty() && sellOrder.getQuantity() > sellOrder.getFilledQuantity()) {
                 Order bestBuy = buyOrders.peek();
                 
+                Order latestBestBuy = orderRepo.findById(bestBuy.getId()).orElse(null);
+                
                 // Lazy deletion check
-                if ("CANCELED".equals(bestBuy.getStatus())) {
+                if (latestBestBuy == null || "CANCELED".equals(latestBestBuy.getStatus())) {
                     buyOrders.poll();
                     continue;
                 }
                 
-                if (isMarket || sellOrder.getPrice() <= bestBuy.getPrice()) {
-                    executeTrade(bestBuy, sellOrder, orderRepo, tradeRepo, bestBuy.getPrice());
-                    if (bestBuy.getQuantity().equals(bestBuy.getFilledQuantity())) {
+                if (isMarket || sellOrder.getPrice() <= latestBestBuy.getPrice()) {
+                    executeTrade(latestBestBuy, sellOrder, orderRepo, tradeRepo, latestBestBuy.getPrice());
+                    if (latestBestBuy.getQuantity().equals(latestBestBuy.getFilledQuantity())) {
                         buyOrders.poll();
+                    } else {
+                        bestBuy.setFilledQuantity(latestBestBuy.getFilledQuantity());
+                        bestBuy.setStatus(latestBestBuy.getStatus());
                     }
                 } else {
                     break;
