@@ -89,6 +89,10 @@ public class MatchingEngineService {
         // The PriorityQueue will lazily discard this order when it surfaces during matching because its status is CANCELED.
     }
 
+    public void cleanUpBotOrdersFromMemory() {
+        orderBooks.values().forEach(OrderBook::removeBotOrders);
+    }
+
     // Inner class to encapsulate the PriorityQueues and synchronize matching per symbol
     private static class OrderBook {
         private final PriorityQueue<Order> buyOrders = new PriorityQueue<>(
@@ -107,6 +111,11 @@ public class MatchingEngineService {
             } else {
                 sellOrders.add(order);
             }
+        }
+
+        public synchronized void removeBotOrders() {
+            buyOrders.removeIf(order -> "market_maker_bot".equals(order.getUserId()));
+            sellOrders.removeIf(order -> "market_maker_bot".equals(order.getUserId()));
         }
 
         public synchronized void matchBuyOrder(Order buyOrder, OrderRepository orderRepo, TradeRepository tradeRepo) {

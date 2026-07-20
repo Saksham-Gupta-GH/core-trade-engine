@@ -7,6 +7,9 @@ import java.time.LocalDateTime;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findByStatusIn(List<String> statuses);
+    @org.springframework.transaction.annotation.Transactional
+    @org.springframework.data.jpa.repository.Modifying
+    @org.springframework.data.jpa.repository.Query("DELETE FROM Order o WHERE o.createdAt < ?1")
     void deleteByCreatedAtBefore(LocalDateTime cutoff);
 
     @org.springframework.transaction.annotation.Transactional

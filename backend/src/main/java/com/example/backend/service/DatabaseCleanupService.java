@@ -10,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
+import com.example.backend.service.MatchingEngineService;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -17,6 +19,7 @@ public class DatabaseCleanupService {
 
     private final OrderRepository orderRepository;
     private final TradeRepository tradeRepository;
+    private final MatchingEngineService matchingEngineService;
 
     /**
      * Runs every day at midnight (00:00).
@@ -47,7 +50,8 @@ public class DatabaseCleanupService {
     public void cleanupBotOrders() {
         int canceledCount = orderRepository.cancelBotOrders(java.util.List.of("OPEN", "PARTIALLY_FILLED"));
         if (canceledCount > 0) {
-            log.info("Scheduled cleanup: canceled {} old market maker bot orders.", canceledCount);
+            log.info("Scheduled cleanup: canceled {} old market maker bot orders in database.", canceledCount);
         }
+        matchingEngineService.cleanUpBotOrdersFromMemory();
     }
 }
